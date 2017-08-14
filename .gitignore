@@ -1,0 +1,30 @@
+# Local build binaries
+node-cli/node-cli
+*.pyc
+/build/*
+/bin
+.idea
+*.iml
+.DS_Store
+tags
+.tags
+.vagrant/
+*~
+*#
+.#*
+# Vim file artifacts
+.*.sw*
+# bddtest log files
+*.log
+.project
+*.prefs
+*.classpath
+/target/*
+TESTS*.xml
+.settings
+.project
+.gradle
+build/
+bin/
+.vscode
+target/
