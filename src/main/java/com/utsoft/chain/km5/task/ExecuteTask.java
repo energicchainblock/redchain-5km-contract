@@ -1,6 +1,7 @@
 package com.utsoft.chain.km5.task;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -102,7 +103,7 @@ public class ExecuteTask implements Runnable {
                 }
              }
              else{
-               Thread.sleep(1000);
+            	 TimeUnit.MILLISECONDS.sleep(1000);
             }
          } catch (ClientException ce) {
         	

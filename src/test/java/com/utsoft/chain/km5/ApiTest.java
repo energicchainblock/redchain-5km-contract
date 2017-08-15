@@ -101,6 +101,11 @@ public class ApiTest {
 			 "txTime": "String", #yyyy-MM-DD:mm:hh:ss
 			 "status": true|false
 		 }
+		 
+		 服务器回调之后返回回调内容
+		 {
+		    "status": true|false
+		 }
 	  */
 	 @Test
 	 public void testRegisterCallback() {
@@ -152,7 +157,7 @@ public class ApiTest {
 			return ;
 		}
 		
-		BaseResponseModel<TkcQueryDetailRspVo> baseResponse = tkcTransactionExportService.getTransactionDetail(applyCategory, from, created, sign);
+		BaseResponseModel<TkcQueryDetailRspVo> baseResponse = tkcTransactionExportService.getAccountDetail(applyCategory, from, created, sign);
 		System.out.println(JSON.toJSON(baseResponse.getData()));
 		assertEquals(baseResponse.getCode(),"200");
 	}

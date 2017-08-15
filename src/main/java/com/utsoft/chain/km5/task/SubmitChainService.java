@@ -1,11 +1,13 @@
 package com.utsoft.chain.km5.task;
 import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
 import com.utsoft.blockchain.api.exception.CryptionException;
 import com.utsoft.blockchain.api.exception.ServiceProcessException;
 import com.utsoft.blockchain.api.pojo.BaseResponseModel;
@@ -16,6 +18,7 @@ import com.utsoft.blockchain.api.pojo.UserInfoRspModel;
 import com.utsoft.blockchain.api.proivder.ITkcAccountStoreExportService;
 import com.utsoft.blockchain.api.proivder.ITkcTransactionExportService;
 import com.utsoft.blockchain.api.security.FamilySecCrypto;
+import com.utsoft.blockchain.api.util.Constants;
 import com.utsoft.blockchain.api.util.SdkUtil;
 import com.utsoft.blockchain.api.util.SignaturePlayload;
 import com.utsoft.chain.km5.dao.PricipalUserRepository;
@@ -65,7 +68,7 @@ public class SubmitChainService {
 		 PricipalUserPo userPo = poricipUserRepository.findUser(conventionChaincode.getFrom());
 		 if (userPo==null) {
 			 if(!register(conventionChaincode.getFrom(),password))
-				throw new ServiceProcessException("user"+conventionChaincode.getFrom()+" register fail");
+				throw new ServiceProcessException(Constants.EXECUTE_FAIL_ERROR,"user"+conventionChaincode.getFrom()+" register fail");
 			   userPo = poricipUserRepository.findUser(conventionChaincode.getFrom());
 		 }
 		 if (userPo!=null) {
