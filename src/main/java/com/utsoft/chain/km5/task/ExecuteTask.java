@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ import com.utsoft.chain.km5.pojo.ConventionChaincode;
  * @version 1.0.0
  */
 @Component
+@DependsOn(value={"submitChainService"})
 public class ExecuteTask implements Runnable {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -53,12 +55,14 @@ public class ExecuteTask implements Runnable {
 	
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 	 
+	private static final String  queueName="Q-5KM-INTEGRAL";
+	
 	@PostConstruct
 	public void initial() {
 		
 		accountProxyClient = new CloudAccount(accessId,accessKey,accountendpoint);
         client = accountProxyClient.getMNSClient(); 
-        queue = client.getQueueRef("TestQueue");
+        queue = client.getQueueRef(queueName);
         executor.submit(this);
 	}
 	
@@ -67,7 +71,7 @@ public class ExecuteTask implements Runnable {
 	public void periodCheckStatus() {
 		if (client!=null && !client.isOpen()) {
 			  client = accountProxyClient.getMNSClient(); 
-		      queue = client.getQueueRef("TestQueue");
+		      queue = client.getQueueRef(queueName);
 		}
 	}
 	

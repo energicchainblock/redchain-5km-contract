@@ -5,9 +5,9 @@
 	<artifactId>tkc-5km-contract</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<parent>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-parent</artifactId>
-            <version>1.5.1.RELEASE</version>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-parent</artifactId>
+       <version>1.5.1.RELEASE</version>
        </parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,8 +20,7 @@
 		<slf4j.version>1.7.24</slf4j.version>
 		<tkc-sdk-java.version>0.0.1-SNAPSHOT</tkc-sdk-java.version>
 		<commons.lang3.version>3.3.2</commons.lang3.version>
-		<motan.version>0.3.0</motan.version>
-		<spring-cloud-dependencies.version>Dalston.SR2</spring-cloud-dependencies.version>
+		<motan.version>0.3.2-SNAPSHOT</motan.version>
 	</properties>
 	<dependencies>
 	 <dependency>
@@ -75,6 +74,21 @@
               <artifactId>spring-boot-starter-test</artifactId>
               <scope>test</scope>
           </dependency>
+          <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	 </dependencies>
 	 <build>
           <finalName>/</finalName>

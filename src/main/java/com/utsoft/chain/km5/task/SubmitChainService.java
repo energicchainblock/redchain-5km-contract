@@ -1,13 +1,10 @@
 package com.utsoft.chain.km5.task;
 import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-
+import org.springframework.stereotype.Component;
 import com.utsoft.blockchain.api.exception.CryptionException;
 import com.utsoft.blockchain.api.exception.ServiceProcessException;
 import com.utsoft.blockchain.api.pojo.BaseResponseModel;
@@ -32,7 +29,7 @@ import com.utsoft.chain.km5.pojo.TransactionResultPo;
  * @date: 2017年8月14日
  * @version 1.0.0
  */
-@Service
+@Component("submitChainService")
 public class SubmitChainService {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -45,11 +42,10 @@ public class SubmitChainService {
 	 
 	
 	 @Autowired 
-     @Lazy(true)
-	 ITkcTransactionExportService tkcTransactionExportService;
+	 ITkcTransactionExportService tkcTransRpcService;
 		
 	 @Autowired
-	 private ITkcAccountStoreExportService tkcAccountStoreExportService;
+	 private ITkcAccountStoreExportService tkcAccoutRpcService;
 	 
 	 @Autowired
 	 private PricipalUserRepository poricipUserRepository;
@@ -66,7 +62,7 @@ public class SubmitChainService {
 	 public boolean handlerChainLogic(String reqId,ConventionChaincode conventionChaincode)  {
 		 
 		 PricipalUserPo userPo = poricipUserRepository.findUser(conventionChaincode.getFrom());
-		 if (userPo==null) {
+		 if (userPo==null&&conventionChaincode.getFrom()!=null) {
 			 if(!register(conventionChaincode.getFrom(),password))
 				throw new ServiceProcessException(Constants.EXECUTE_FAIL_ERROR,"user"+conventionChaincode.getFrom()+" register fail");
 			   userPo = poricipUserRepository.findUser(conventionChaincode.getFrom());
@@ -77,7 +73,12 @@ public class SubmitChainService {
 		 return false;
 	 }
 	 
-	 
+	 /**
+	  * 注册用户
+	  * @param accountId
+	  * @param password
+	  * @return
+	  */
 	 public boolean register(String accountId,String password)  {
 		   
     	 String  created = SdkUtil.generateId();
@@ -86,7 +87,7 @@ public class SubmitChainService {
 		 requestModel.setPassword(password);
 		 requestModel.setCreated(created);
 		 
-		 BaseResponseModel<UserInfoRspModel> baseResponse = tkcAccountStoreExportService.register(requestModel);
+		 BaseResponseModel<UserInfoRspModel> baseResponse = tkcAccoutRpcService.register(requestModel);
 		 if (baseResponse.getData()!=null) {
 			String publicKey = baseResponse.getData().getPrivateKey();
 			
@@ -101,7 +102,7 @@ public class SubmitChainService {
 		 return  false;
 	 }
 	 
-	 /**
+	 /** 交易执行
 	  * @param reqId
 	  * @param from
 	  * @param privateKey
@@ -136,9 +137,8 @@ public class SubmitChainService {
 				  logger.error("not sign success ",e);
 				return  false;
 			}
-			 BaseResponseModel<TkcSubmitRspVo> baseResponse = tkcTransactionExportService.tranfer(model,sign);
-			 if (baseResponse.isSuccess()) {
-				
+			 BaseResponseModel<TkcSubmitRspVo> baseResponse=tkcTransRpcService.tranfer(model,sign);
+			 if (baseResponse.isSuccess()) {	
 				 TkcSubmitRspVo rspVo = baseResponse.getData();
 				 TransactionResultPo  entities = new TransactionResultPo();
 				 entities.setReqId(conventionChaincode.getSubmitJson());
@@ -148,7 +148,7 @@ public class SubmitChainService {
 				 entities.setGmtCreate(new Date());
 				 tansactionResultRepository.save(entities);
 				 return true;
-		} 
-	    return false;
+		 } 
+	     return false;
 	 } 
 }
