@@ -99,7 +99,9 @@ public class ApiTest {
 			 "reqId": "String", #请求id=created
 		     "txId": "String" ,#"区块链交易ID,后面可以通过它查询bolckinfo 去查询blockinfo"
 			 "txTime": "String", #yyyy-MM-DD:mm:hh:ss
-			 "status": true|false
+			 "status": true|false,
+			  "forward": 0|1,0 转出，1 转进
+			  "user":  用户
 		 }
 		 
 		 服务器回调之后返回回调内容
