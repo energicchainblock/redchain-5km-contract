@@ -18,15 +18,15 @@
 		<jackson.version>2.8.7</jackson.version>
 		<okhttp.version>3.6.0</okhttp.version>
 		<slf4j.version>1.7.24</slf4j.version>
-		<tkc-sdk-java.version>0.0.1-SNAPSHOT</tkc-sdk-java.version>
+		<invoker-sdk-java.version>0.0.1-SNAPSHOT</invoker-sdk-java.version>
 		<commons.lang3.version>3.3.2</commons.lang3.version>
 		<motan.version>0.3.2-SNAPSHOT</motan.version>
 	</properties>
 	<dependencies>
 	 <dependency>
 		  <groupId>com.utsoft.blockchain</groupId>
-		  <artifactId>tkc-invoker-provider</artifactId>
-		  <version>${tkc-sdk-java.version}</version>
+		  <artifactId>redchain-invoker-provider</artifactId>
+		  <version>${invoker-sdk-java.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
