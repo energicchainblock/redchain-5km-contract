@@ -67,8 +67,11 @@ public class SubmitChainService {
 				throw new ServiceProcessException(Constants.EXECUTE_FAIL_ERROR,"user"+conventionChaincode.getFrom()+" register fail");
 			   userPo = poricipUserRepository.findUser(conventionChaincode.getFrom());
 		 }
+		 if (tansactionResultRepository.findByReqId(reqId)!=null) {
+			 return true;
+		 }
 		 if (userPo!=null) {
-			return doTransaction(userPo,conventionChaincode);
+			 return doTransaction(userPo,conventionChaincode);
 		 }
 		 return false;
 	 }
@@ -138,10 +141,10 @@ public class SubmitChainService {
 				return  false;
 			}
 			 BaseResponseModel<TkcSubmitRspVo> baseResponse=tkcTransRpcService.tranfer(model,sign);
-			 if (baseResponse.isSuccess()) {	
+			 if (baseResponse.isSuccess()) {
 				 TkcSubmitRspVo rspVo = baseResponse.getData();
 				 TransactionResultPo  entities = new TransactionResultPo();
-				 entities.setReqId(conventionChaincode.getSubmitJson());
+				 entities.setReqId(conventionChaincode.getReqId());
 				 entities.setTxId(rspVo.getTxId());
 				 entities.setSubmitId(created);
 				 entities.setStatus(rspVo.isStatus()?1 : 0);

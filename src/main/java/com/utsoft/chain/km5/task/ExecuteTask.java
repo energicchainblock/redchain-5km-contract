@@ -2,10 +2,9 @@ package com.utsoft.chain.km5.task;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.alibaba.fastjson.JSON;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.CloudQueue;
 import com.aliyun.mns.client.MNSClient;
@@ -54,9 +51,9 @@ public class ExecuteTask implements Runnable {
 	private   MNSClient client;
 	
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
-	 
-	private static final String  queueName="Q-5KM-INTEGRAL";
-	
+	private ConventionChaincode conventionChaincode = new ConventionChaincode();
+	private static final String  queueName="Q-5KM-BLOCK-CHAIN";
+
 	@PostConstruct
 	public void initial() {
 		
@@ -100,9 +97,22 @@ public class ExecuteTask implements Runnable {
             	 */
             	Object[] args = {popMsg.getReceiptHandle(),popMsg.getMessageBodyAsString(),popMsg.getMessageId(),popMsg.getDequeueCount()};
                 logger.info("msghandler-{} body-{} id-{},dequeue count-{}",args);
-                
-                 ConventionChaincode conventionChaincode = JSON.parseObject(popMsg.getMessageBodyAsString(),ConventionChaincode.class);
-                if (submitChainService.handlerChainLogic(popMsg.getMessageId(),conventionChaincode))  {
+				JSONObject obj = JSONObject.parseObject(popMsg.getMessageBodyAsString());
+				//日签
+				if(obj.get("queueType").equals("DIARY")){
+					conventionChaincode.setSubmitJson(popMsg.getMessageBodyAsString());
+					conventionChaincode.setReqId(popMsg.getMessageId());
+					conventionChaincode.setFrom(((JSONObject)obj.get("msg")).get("from").toString());
+					conventionChaincode.setTo(((JSONObject)obj.get("msg")).get("to").toString());
+					conventionChaincode.setCmd("dailyMsg");
+				}else if(obj.get("queueType").equals("INTEGRAL")){//积分
+					conventionChaincode.setSubmitJson(popMsg.getMessageBodyAsString());
+					conventionChaincode.setReqId(popMsg.getMessageId());
+					conventionChaincode.setFrom(obj.get("user_id").toString());
+					conventionChaincode.setTo(obj.get("order_id").toString());
+					conventionChaincode.setCmd("integral");
+				}
+                 if (submitChainService.handlerChainLogic(popMsg.getMessageId(),conventionChaincode))  {
                 	 queue.deleteMessage(popMsg.getReceiptHandle());
                 }
              }
