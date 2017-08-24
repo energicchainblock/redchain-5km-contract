@@ -4,8 +4,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import com.utsoft.blockchain.api.proivder.ITkcAccountStoreExportService;
-import com.utsoft.blockchain.api.proivder.ITkcTransactionExportService;
+import com.utsoft.blockchain.api.proivder.ITkcTransactionExportServiceAsync;
 import com.weibo.api.motan.config.BasicRefererInterfaceConfig;
 import com.weibo.api.motan.config.ProtocolConfig;
 import com.weibo.api.motan.config.RefererConfig;
@@ -62,11 +63,11 @@ public class ImportPrcClientConfig {
 	}
 
 	@Bean("tkcTransactionExportService")
-	public ITkcTransactionExportService instanceTransactionExportService(RegistryConfig registry,
+	public ITkcTransactionExportServiceAsync instanceTransactionExportService(RegistryConfig registry,
 			BasicRefererInterfaceConfig basicReferer, ProtocolConfig prod) {
 
-		RefererConfig<ITkcTransactionExportService> motanDemoServiceReferer = new RefererConfig<ITkcTransactionExportService>();
-		motanDemoServiceReferer.setInterface(ITkcTransactionExportService.class);
+		RefererConfig<ITkcTransactionExportServiceAsync> motanDemoServiceReferer = new RefererConfig<>();
+		motanDemoServiceReferer.setInterface(ITkcTransactionExportServiceAsync.class);
 		motanDemoServiceReferer.setGroup("blockchainTransaction");
 		motanDemoServiceReferer.setVersion("1.0");
 		motanDemoServiceReferer.setId("tkcTransactionExportService");
@@ -83,7 +84,7 @@ public class ImportPrcClientConfig {
 	public ITkcAccountStoreExportService instanceTkcAccountStoreExportService(RegistryConfig registry,
 			BasicRefererInterfaceConfig basicReferer, ProtocolConfig prod) {
 
-		RefererConfig<ITkcAccountStoreExportService> motanDemoServiceReferer = new RefererConfig<ITkcAccountStoreExportService>();
+		RefererConfig<ITkcAccountStoreExportService> motanDemoServiceReferer = new RefererConfig<>();
 		motanDemoServiceReferer.setInterface(ITkcAccountStoreExportService.class);
 		motanDemoServiceReferer.setGroup("blockchainTransaction");
 		motanDemoServiceReferer.setVersion("1.0");

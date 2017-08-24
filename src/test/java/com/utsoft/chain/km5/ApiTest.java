@@ -1,6 +1,5 @@
 package com.utsoft.chain.km5;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.context.ConfigFileApplicationContextInitial
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import com.alibaba.fastjson.JSON;
 import com.utsoft.blockchain.api.exception.CryptionException;
 import com.utsoft.blockchain.api.pojo.BaseResponseModel;
@@ -21,10 +21,15 @@ import com.utsoft.blockchain.api.pojo.TransactionVarModel;
 import com.utsoft.blockchain.api.pojo.UserInfoRequstModel;
 import com.utsoft.blockchain.api.pojo.UserInfoRspModel;
 import com.utsoft.blockchain.api.proivder.ITkcAccountStoreExportService;
-import com.utsoft.blockchain.api.proivder.ITkcTransactionExportService;
+import com.utsoft.blockchain.api.proivder.ITkcTransactionExportServiceAsync;
 import com.utsoft.blockchain.api.security.FamilySecCrypto;
 import com.utsoft.blockchain.api.util.SdkUtil;
 import com.utsoft.blockchain.api.util.SignaturePlayload;
+import com.weibo.api.motan.rpc.Future;
+import com.weibo.api.motan.rpc.FutureListener;
+import com.weibo.api.motan.rpc.ResponseFuture;
+
+import junit.framework.Assert;
 @RunWith(SpringJUnit4ClassRunner.class)     
 @ContextConfiguration(initializers={ConfigFileApplicationContextInitializer.class})
 @SpringBootTest(classes=KmContractApplication.class)
@@ -34,8 +39,11 @@ public class ApiTest {
 	@Value("${apply.category}")
 	private String applyCategory;
 	 
+	/**
+	 * 支持异常处理
+	 */
 	@Autowired
-	ITkcTransactionExportService tkcTransactionExportService;
+	private ITkcTransactionExportServiceAsync tkcTransactionExportService;
 	
 	@Autowired
 	private ITkcAccountStoreExportService tkcAccountStoreExportService;
@@ -54,7 +62,7 @@ public class ApiTest {
 	 @Value("${user.token}")
 	 private String token ; 
 	 
-	 private static String txId ="53726fda86a9f4a3f1c7a4580f8f168829ef64a4e405c7fb7a2fe28c3704e8bb";
+	 private static String txId ="018029b55ff861140fbb19dba2f8478c1725f01580fedb81b960d25200440e74";
 	
 	 @Before
 	 public void setup() {
@@ -280,10 +288,31 @@ public class ApiTest {
 			fail("not sign success ");
 			return ;
 		}
-	   BaseResponseModel<TkcTransactionBlockInfoVo> baseResponse = tkcTransactionExportService.listStockChanges(applyCategory,from, txId, created, sign);
-	   assertEquals(baseResponse.getCode(),200);
-	   if (baseResponse.isSuccess()) {
-		   System.out.println(JSON.toJSON(baseResponse.getData()));
-	   }
+		 
+		 ResponseFuture baseResponseFuture = tkcTransactionExportService.listStockChangesAsync(applyCategory,from, txId, created, sign);
+		
+		 FutureListener listener = new FutureListener() {  
+	       
+         public void operationComplete(Future future) throws Exception {
+            	 
+            	 System.out.println("async call "+ (future.isSuccess() ? "sucess": "fail exception:"+future.getException().getMessage()));
+            	 
+            	 if (future.isSuccess()) {
+            		
+            		 BaseResponseModel<TkcTransactionBlockInfoVo> baseResponse = (BaseResponseModel<TkcTransactionBlockInfoVo>) future.getValue();
+                	 assertEquals(baseResponse.getCode(),200);
+             	     if (baseResponse.isSuccess()) {
+             		   System.out.println(JSON.toJSON(baseResponse.getData()));
+             	    }
+            	 } else 
+            	assertTrue(future.isSuccess());
+             }
+         };
+         baseResponseFuture.addListener(listener);
+         try {
+             Thread.sleep(120000);
+         } catch (InterruptedException e) {
+             e.printStackTrace();
+         }
 	}		
 }
